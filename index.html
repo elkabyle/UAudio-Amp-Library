@@ -944,7 +944,7 @@ body {
             type: 'blob'
           });
           const link = document.createElement('a');
-          link.download = `UTK-${settings.pedalName}-settings.uasave`;
+          link.download = `UAudio-${settings.pedalName}-settings.uasave`;
           link.href = URL.createObjectURL(zipContent);
           link.click();
           URL.revokeObjectURL(link.href);
@@ -1133,7 +1133,7 @@ body {
           type: 'blob'
         });
         const link = document.createElement('a');
-        const fileName = `UTK-${favorite.customName || `${favorite.name}-${favorite.timestamp}`}-settings.uasave`.replace(/[^a-z0-9-]/gi, '_');
+        const fileName = `UAudio-${favorite.customName || `${favorite.name}-${favorite.timestamp}`}-settings.uasave`.replace(/[^a-z0-9-]/gi, '_');
         link.download = fileName;
         link.href = URL.createObjectURL(zipContent);
         link.click();
