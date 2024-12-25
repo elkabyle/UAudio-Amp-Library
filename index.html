@@ -39,6 +39,12 @@ body {
   font-style: italic;
 }
 
+#donate-button-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
 .pedal-container {
   display: flex;
   flex-wrap: wrap;
@@ -371,6 +377,22 @@ body {
 <header class="app-header">
   <h1>UAudio Amp Library</h1>
   <p class="tagline">Your Ultimate Tone Library Manager</p>
+  <div id="donate-button-container">
+      <div style="margin-top: 50px;"></div>
+      <div id="donate-button"></div>
+      <script src="https://www.paypalobjects.com/donate/sdk/donate-sdk.js" charset="UTF-8"></script>
+      <script>
+          PayPal.Donation.Button({
+              env: 'production',
+              hosted_button_id: 'KTN5H79BND7MQ',
+              image: {
+                  src: 'https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif',
+                  alt: 'Donate with PayPal button',
+                  title: 'PayPal - The safer, easier way to pay online!'
+              }
+          }).render('#donate-button');
+      </script>
+    </div>
 </header>
 <div class="pedal-container">
   <!-- Cream '65 -->
