@@ -87,6 +87,9 @@ body {
   cursor: pointer;
   transform-origin: center center;
   transition: transform 0.1s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .knob::after {
@@ -802,12 +805,29 @@ body {
   const knobs = document.querySelectorAll('.knob-container');
   knobs.forEach(knobContainer => {
     const knob = knobContainer.querySelector('.knob');
-    let rotating = false;
     let dragging = false;
-    let startAngle = 0;
-    let currentRotation = 0;
     let startX, startY;
     let originalX, originalY;
+    let startAngle, currentAngle;
+    function calculateAngle(x, y, centerX, centerY) {
+      return Math.atan2(y - centerY, x - centerX) * 180 / Math.PI;
+    }
+    function rotateKnob(e) {
+      const rect = knobContainer.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const mouseX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+      const mouseY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+      currentAngle = calculateAngle(mouseX, mouseY, centerX, centerY);
+      let delta = currentAngle - startAngle;
+      if (delta > 180) delta -= 360;
+      if (delta < -180) delta += 360;
+      let newRotation = parseInt(knob.dataset.rotation || 0) + delta;
+      newRotation = Math.min(150, Math.max(-150, newRotation));
+      knob.style.transform = `rotate(${newRotation}deg)`;
+      knob.dataset.rotation = newRotation;
+      startAngle = currentAngle;
+    }
     knobContainer.addEventListener('mousedown', e => {
       if (e.shiftKey) {
         dragging = true;
@@ -816,15 +836,27 @@ body {
         const rect = knobContainer.getBoundingClientRect();
         originalX = rect.left;
         originalY = rect.top;
-        const pedal = knobContainer.closest('.pedal-image');
-        const pedalRect = pedal.getBoundingClientRect();
-        e.preventDefault();
       } else {
-        rotating = true;
-        const knobRect = knob.getBoundingClientRect();
-        const knobCenterX = knobRect.left + knobRect.width / 2;
-        const knobCenterY = knobRect.top + knobRect.height / 2;
-        startAngle = Math.atan2(e.clientY - knobCenterY, e.clientX - knobCenterX);
+        const rect = knobContainer.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        startAngle = calculateAngle(e.clientX, e.clientY, centerX, centerY);
+        knob.dataset.dragging = true;
+      }
+    });
+    knobContainer.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const rect = knobContainer.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      startAngle = calculateAngle(e.touches[0].clientX, e.touches[0].clientY, centerX, centerY);
+      knob.dataset.dragging = true;
+      if (e.touches.length > 1) {
+        dragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        originalX = rect.left;
+        originalY = rect.top;
       }
     });
     document.addEventListener('mousemove', e => {
@@ -837,25 +869,23 @@ body {
         const newTop = (originalY + dy - pedalRect.top) / pedalRect.height * 100;
         knobContainer.style.left = `${newLeft}%`;
         knobContainer.style.top = `${newTop}%`;
-        console.log(`Current position - Left: ${Math.round(newLeft)}%, Top: ${Math.round(newTop)}%`);
+      } else if (knob.dataset.dragging === 'true') {
+        rotateKnob(e);
       }
-      if (rotating) {
-        const knobRect = knob.getBoundingClientRect();
-        const knobCenterX = knobRect.left + knobRect.width / 2;
-        const knobCenterY = knobRect.top + knobRect.height / 2;
-        const currentAngle = Math.atan2(e.clientY - knobCenterY, e.clientX - knobCenterX);
-        let angleDiff = currentAngle - startAngle;
-        angleDiff = angleDiff * (180 / Math.PI);
-        let newRotation = currentRotation + angleDiff;
-        newRotation = Math.max(-150, Math.min(150, newRotation));
-        knob.style.transform = `rotate(${newRotation}deg)`;
-        currentRotation = newRotation;
-        startAngle = currentAngle;
+    });
+    document.addEventListener('touchmove', e => {
+      if (knob.dataset.dragging === 'true') {
+        e.preventDefault();
+        rotateKnob(e);
       }
     });
     document.addEventListener('mouseup', () => {
-      rotating = false;
       dragging = false;
+      knob.dataset.dragging = false;
+    });
+    document.addEventListener('touchend', () => {
+      dragging = false;
+      knob.dataset.dragging = false;
     });
   });
   const allRadioButtons = document.querySelectorAll('.radio-button');
@@ -967,7 +997,14 @@ body {
           });
           const link = document.createElement('a');
           link.download = `UAudio-${settings.pedalName}-settings.uasave`;
-          link.href = URL.createObjectURL(zipContent);
+          if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            const blob = new Blob([zipContent], {
+              type: 'application/x-uasave'
+            });
+            link.href = URL.createObjectURL(blob);
+          } else {
+            link.href = URL.createObjectURL(zipContent);
+          }
           link.click();
           URL.revokeObjectURL(link.href);
         }, 'image/png', 1.0);
