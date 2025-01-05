@@ -996,7 +996,7 @@ body {
             type: 'blob'
           });
           const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          const fileName = `UTK-${settings.pedalName}-${timestamp}.uasave`.replace(/\s+/g, '-');
+          const fileName = `UAudio-${settings.pedalName}-${timestamp}.uasave`.replace(/\s+/g, '-');
           const link = document.createElement('a');
           link.download = fileName;
           if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
