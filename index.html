@@ -1,10 +1,15 @@
-<html><head><base href="."><title>UAudio Amp Library</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base href=".">
+<title>UAudio Amp Library</title>
 <meta name="description" content="UAudio pedal tone settings manager and library">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<style>* {
+<style>
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -37,6 +42,7 @@ body {
   font-size: 1.1em;
   font-style: italic;
 }
+
 #donate-button-container {
   margin: 20px auto 0;
   text-align: center;
@@ -119,17 +125,17 @@ body {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;  /* Reduced from previous value */
+  gap: 10px;
   margin-top: 15px;
 }
 
-.save-button, 
+.save-button,
 .import-button,
 .add-favorite-button,
 .show-favorites-button {
   display: block;
   width: 100%;
-  margin: 0 auto;  /* Reset any individual margins */
+  margin: 0 auto;
   padding: 10px 20px;
   background: #444;
   color: #fff;
@@ -140,7 +146,7 @@ body {
   transition: background 0.3s;
 }
 
-.save-button:hover, 
+.save-button:hover,
 .import-button:hover,
 .add-favorite-button:hover,
 .show-favorites-button:hover {
@@ -157,7 +163,7 @@ body {
   gap: 5px;
   align-items: center;
 }
-  
+
 .led-container.second-led-set {
   position: absolute;
   top: 28.65%;
@@ -169,14 +175,13 @@ body {
 }
 
 .led-container.second-led-set .radio-button {
-  position: absolute;  /* Remove absolute positioning */
-  transform: 5;   /* Remove transform */
-  order: -1;        /* Place radio button first in the flex container */
-  margin-right: 43px; /* Add some spacing after the radio button */
+  position: absolute;
+  order: -1;
+  margin-right: 43px;
 }
 
 .led-container.second-led-set .led {
-  margin-left: 0;  /* Remove default left margin */
+  margin-left: 0;
 }
 
 .led {
@@ -188,27 +193,35 @@ body {
 }
 
 .led.red {
-  background: radial-gradient(circle at center, 
-    #ffeb3b 0%, 
-    #ff5722 40%, 
+  background: radial-gradient(circle at center,
+    #ffeb3b 0%,
+    #ff5722 40%,
     #f44336 100%);
   box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.7);
 }
 
 .led.green {
-  background: radial-gradient(circle at center, 
-    #b2ff59 0%, 
-    #4caf50 40%, 
+  background: radial-gradient(circle at center,
+    #b2ff59 0%,
+    #4caf50 40%,
     #2e7d32 100%);
   box-shadow: 0 0 5px 2px rgba(0, 255, 0, 0.7);
 }
 
 .led.amber {
-  background: radial-gradient(circle at center, 
-    #ffca28 0%, 
-    #ffa000 40%, 
+  background: radial-gradient(circle at center,
+    #ffca28 0%,
+    #ffa000 40%,
     #ff6f00 100%);
   box-shadow: 0 0 5px 2px rgba(255, 165, 0, 0.7);
+}
+
+.led.led-cyan {
+  background: radial-gradient(circle at center,
+    #00ffff 0%,
+    #00cccc 40%,
+    #009999 100%);
+  box-shadow: 0 0 5px 2px rgba(0, 255, 255, 0.7);
 }
 
 .radio-button {
@@ -282,7 +295,7 @@ body {
   background: #2a2a2a;
   border-radius: 10px;
   padding: 15px;
-  position: relative; 
+  position: relative;
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -373,7 +386,8 @@ body {
   opacity: 0.6;
   z-index: 90;
 }
-</style></head>
+</style>
+</head>
 <body>
 <header class="app-header">
   <h1>UAudio Amp Library</h1>
@@ -803,13 +817,13 @@ async function loadBase64Background(url, elementId, retryCount = 0) {
                 'Pragma': 'no-cache'
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const base64Data = await response.text();
-        
+
         // Check if we got actual data
         if (!base64Data || base64Data.length < 100) {
             if (retryCount < 3) {
@@ -839,17 +853,16 @@ const pedals = [
 // Load all images in parallel
 document.addEventListener('DOMContentLoaded', () => {
     // Create an array of promises for all image loads
-    const loadPromises = pedals.map(pedal => 
+    const loadPromises = pedals.map(pedal =>
         loadBase64Background(pedal.url, pedal.id)
     );
-    
+
     // Wait for all images to load (optional)
     Promise.all(loadPromises).then(() => {
         console.log('All images loaded');
     });
 });
 </script>
-
 
 <div class="favorites-container">
   <div class="favorites-header">
@@ -863,7 +876,8 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
-<script>document.addEventListener('DOMContentLoaded', () => {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
   const knobs = document.querySelectorAll('.knob-container');
   knobs.forEach(knobContainer => {
     const knob = knobContainer.querySelector('.knob');
@@ -950,6 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
       knob.dataset.dragging = false;
     });
   });
+
   const allRadioButtons = document.querySelectorAll('.radio-button');
   const allLedContainers = document.querySelectorAll('.led-container:not(.second-led-set)');
   allLedContainers.forEach(ledContainer => {
@@ -961,31 +976,38 @@ document.addEventListener('DOMContentLoaded', () => {
       leds[0].classList.add('red');
     }
   });
+
   allRadioButtons.forEach(radioButton => {
     const ledContainer = radioButton.closest('.led-container');
     const leds = ledContainer.querySelectorAll('.led');
+    ledContainer.dataset.currentState = '0'; // Initialize state tracking
+
     let currentState = 1;
     const isEnigmaxLeft = ledContainer.closest('.pedal')?.querySelector('h2')?.textContent === 'Enigmax' && !ledContainer.classList.contains('second-led-set');
     const totalStates = ledContainer.classList.contains('second-led-set') ? 3 : isEnigmaxLeft ? 10 : 7;
+
     if (ledContainer.classList.contains('second-led-set')) {
       leds.forEach(led => {
+        led.className = 'led led-cyan'; // Add specific class for second set
         led.style.background = 'black';
         led.style.boxShadow = 'none';
-        led.className = 'led';
       });
       leds[0].style.background = 'radial-gradient(circle at center, #00ffff 0%, #00cccc 40%, #009999 100%)';
       leds[0].style.boxShadow = '0 0 5px 2px rgba(0, 255, 255, 0.7)';
     }
+
     radioButton.addEventListener('click', () => {
+      ledContainer.dataset.currentState = currentState.toString();
+
       if (ledContainer.classList.contains('second-led-set')) {
         leds.forEach(led => {
+          led.className = 'led led-cyan';
           led.style.background = 'black';
           led.style.boxShadow = 'none';
         });
         const activeLed = leds[currentState];
         activeLed.style.background = 'radial-gradient(circle at center, #00ffff 0%, #00cccc 40%, #009999 100%)';
         activeLed.style.boxShadow = '0 0 5px 2px rgba(0, 255, 255, 0.7)';
-        currentState = (currentState + 1) % totalStates;
       } else if (isEnigmaxLeft) {
         leds.forEach(led => {
           led.className = 'led';
@@ -997,37 +1019,24 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (currentState < 9) {
           leds[currentState - 6].classList.add('amber');
         }
-        currentState = (currentState + 1) % totalStates;
       } else {
         leds.forEach(led => {
           led.className = 'led';
         });
         switch (currentState) {
-          case 0:
-            leds[0].classList.add('red');
-            break;
-          case 1:
-            leds[1].classList.add('red');
-            break;
-          case 2:
-            leds[2].classList.add('red');
-            break;
-          case 3:
-            leds[0].classList.add('green');
-            break;
-          case 4:
-            leds[1].classList.add('green');
-            break;
-          case 5:
-            leds[2].classList.add('green');
-            break;
-          case 6:
-            break;
+          case 0: leds[0].classList.add('red'); break;
+          case 1: leds[1].classList.add('red'); break;
+          case 2: leds[2].classList.add('red'); break;
+          case 3: leds[0].classList.add('green'); break;
+          case 4: leds[1].classList.add('green'); break;
+          case 5: leds[2].classList.add('green'); break;
+          case 6: break;
         }
-        currentState = (currentState + 1) % 7;
       }
+      currentState = (currentState + 1) % totalStates;
     });
   });
+
   function getPedalExtension(pedalName) {
     const extensionMap = {
       'Cream \'65': 'cream',
@@ -1040,10 +1049,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     return extensionMap[pedalName];
   }
+
   function validatePedalFile(pedalName, fileName) {
     const expectedExt = getPedalExtension(pedalName);
     return fileName.toLowerCase().endsWith(`.${expectedExt}`);
   }
+
   document.querySelectorAll('.save-button').forEach(button => {
     button.addEventListener('click', async function () {
       const pedal = button.closest('.pedal');
@@ -1056,18 +1067,9 @@ document.addEventListener('DOMContentLoaded', () => {
           scale: 2,
           logging: false
         });
-        const settings = {
-          pedalName: pedalName,
-          knobPositions: Array.from(pedal.querySelectorAll('.knob')).map(knob => ({
-            param: knob.dataset.param,
-            rotation: knob.dataset.rotation || '0',
-            top: knob.closest('.knob-container').style.top,
-            left: knob.closest('.knob-container').style.left
-          })),
-          ledStates: Array.from(pedal.querySelectorAll('.led')).map(led => ({
-            className: led.className
-          }))
-        };
+
+        const settings = saveSettings(pedal);
+
         canvas.toBlob(async function (imageBlob) {
           const zip = new JSZip();
           zip.file('settings.json', JSON.stringify(settings));
@@ -1097,6 +1099,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
   document.querySelectorAll('.import-button').forEach(button => {
     const fileInput = button.closest('.button-group').querySelector('.import-input');
     button.addEventListener('click', () => {
@@ -1119,22 +1122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const presetName = file.name.split('.')[0];
         pedal.querySelector('.preset-name').textContent = presetName;
-        settings.knobPositions.forEach(knobSetting => {
-          const knob = pedal.querySelector(`[data-param="${knobSetting.param}"]`);
-          if (knob) {
-            knob.dataset.rotation = knobSetting.rotation;
-            knob.style.transform = `rotate(${knobSetting.rotation}deg)`;
-            const knobContainer = knob.closest('.knob-container');
-            knobContainer.style.top = knobSetting.top;
-            knobContainer.style.left = knobSetting.left;
-          }
-        });
-        const leds = pedal.querySelectorAll('.led');
-        settings.ledStates.forEach((ledState, idx) => {
-          if (leds[idx]) {
-            leds[idx].className = ledState.className;
-          }
-        });
+        restoreSettings(pedal, settings);
         pedal.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
@@ -1146,10 +1134,12 @@ document.addEventListener('DOMContentLoaded', () => {
       fileInput.value = '';
     });
   });
+
   const favoritesContainer = document.querySelector('.favorites-container');
   const pedalContainer = document.querySelector('.pedal-container');
   const favoritesGrid = document.querySelector('.favorites-grid');
   const pedalFavorites = JSON.parse(localStorage.getItem('pedal-favorites')) || {};
+
   document.querySelectorAll('.add-favorite-button').forEach(button => {
     button.addEventListener('click', async function () {
       const pedal = button.closest('.pedal');
@@ -1173,17 +1163,7 @@ document.addEventListener('DOMContentLoaded', () => {
           customName: customName,
           image: imageData,
           timestamp: timestamp,
-          settings: {
-            knobPositions: Array.from(pedal.querySelectorAll('.knob')).map(knob => ({
-              param: knob.dataset.param,
-              rotation: knob.dataset.rotation || '0',
-              top: knob.closest('.knob-container').style.top,
-              left: knob.closest('.knob-container').style.left
-            })),
-            ledStates: Array.from(pedal.querySelectorAll('.led')).map(led => ({
-              className: led.className
-            }))
-          }
+          settings: saveSettings(pedal)
         });
         localStorage.setItem('pedal-favorites', JSON.stringify(pedalFavorites));
         alert('Added to favorites!');
@@ -1193,6 +1173,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
   document.querySelectorAll('.show-favorites-button').forEach(button => {
     button.addEventListener('click', () => {
       const pedal = button.closest('.pedal');
@@ -1220,22 +1201,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const targetPedal = Array.from(document.querySelectorAll('.pedal')).find(p => p.querySelector('h2').textContent.trim() === pedalName);
           if (targetPedal) {
             targetPedal.querySelector('.preset-name').textContent = favorite.customName || favorite.name;
-            favorite.settings.knobPositions.forEach(knobSetting => {
-              const knob = targetPedal.querySelector(`[data-param="${knobSetting.param}"]`);
-              if (knob) {
-                knob.dataset.rotation = knobSetting.rotation;
-                knob.style.transform = `rotate(${knobSetting.rotation}deg)`;
-                const knobContainer = knob.closest('.knob-container');
-                knobContainer.style.top = knobSetting.top;
-                knobContainer.style.left = knobSetting.left;
-              }
-            });
-            const leds = targetPedal.querySelectorAll('.led');
-            favorite.settings.ledStates.forEach((ledState, idx) => {
-              if (leds[idx]) {
-                leds[idx].className = ledState.className;
-              }
-            });
+            restoreSettings(targetPedal, favorite.settings);
             targetPedal.scrollIntoView({
               behavior: 'smooth',
               block: 'center'
@@ -1255,10 +1221,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
   document.querySelector('.back-button').addEventListener('click', () => {
     favoritesContainer.style.display = 'none';
     pedalContainer.style.display = 'flex';
   });
+
   document.querySelector('.export-all-button').addEventListener('click', async function () {
     const currentPedalName = document.querySelector('.favorites-header h1').textContent.replace(' Favorites', '').trim();
     const currentFavorites = pedalFavorites[currentPedalName] || [];
@@ -1296,5 +1264,67 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     alert('Export complete!');
   });
-});</script>
-</body></html>
+
+  function saveSettings(pedal) {
+    return {
+      pedalName: pedal.querySelector('h2').textContent.trim(),
+      knobPositions: Array.from(pedal.querySelectorAll('.knob')).map(knob => ({
+        param: knob.dataset.param,
+        rotation: knob.dataset.rotation || '0',
+        top: knob.closest('.knob-container').style.top,
+        left: knob.closest('.knob-container').style.left
+      })),
+      ledStates: {
+        firstSet: Array.from(pedal.querySelectorAll('.led-container:not(.second-led-set) .led')).map(led => ({
+          className: led.className,
+          currentState: led.closest('.led-container').dataset.currentState || '0'
+        })),
+        secondSet: Array.from(pedal.querySelectorAll('.led-container.second-led-set .led')).map(led => ({
+          className: led.className,
+          currentState: led.closest('.led-container').dataset.currentState || '0',
+          style: {
+            background: led.style.background,
+            boxShadow: led.style.boxShadow
+          }
+        }))
+      }
+    };
+  }
+
+  function restoreSettings(pedal, settings) {
+    // Restore knob positions first
+    settings.knobPositions.forEach(knobSetting => {
+      const knob = pedal.querySelector(`[data-param="${knobSetting.param}"]`);
+      if (knob) {
+        knob.dataset.rotation = knobSetting.rotation;
+        knob.style.transform = `rotate(${knobSetting.rotation}deg)`;
+        const knobContainer = knob.closest('.knob-container');
+        knobContainer.style.top = knobSetting.top;
+        knobContainer.style.left = knobSetting.left;
+      }
+    });
+
+    // Restore first LED set
+    const firstSetLeds = pedal.querySelectorAll('.led-container:not(.second-led-set) .led');
+    settings.ledStates.firstSet.forEach((ledState, idx) => {
+      if (firstSetLeds[idx]) {
+        firstSetLeds[idx].className = ledState.className;
+        firstSetLeds[idx].closest('.led-container').dataset.currentState = ledState.currentState;
+      }
+    });
+
+    // Restore second LED set
+    const secondSetLeds = pedal.querySelectorAll('.led-container.second-led-set .led');
+    settings.ledStates.secondSet.forEach((ledState, idx) => {
+      if (secondSetLeds[idx]) {
+        secondSetLeds[idx].className = ledState.className;
+        secondSetLeds[idx].style.background = ledState.style.background;
+        secondSetLeds[idx].style.boxShadow = ledState.style.boxShadow;
+        secondSetLeds[idx].closest('.led-container').dataset.currentState = ledState.currentState;
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
