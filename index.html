@@ -7,12 +7,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  overflow-y: scroll;
 }
 
 body {
@@ -63,6 +68,26 @@ body {
   padding: 20px;
   width: 300px;
   position: relative;
+}
+
+.pedal-interface {
+  display: block;
+}
+
+.uafx-controls-interface {
+    display: none; /* Initially hidden */
+    width: 100%;
+    height: 400px; /* Same height as pedal-image */
+    background-color: #111; /* Slightly lighter than black for visibility */
+    border-radius: 5px; /* Optional: match pedal image style */
+    margin-bottom: 10px; /* Adjust spacing if needed */
+    padding: 15px;
+    color: #eee;
+    font-size: 14px;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    overflow-x: hidden;     /* Prevent horizontal scroll */
+    width: 70w;           /* Lock width to viewport */
+    position: relative;     /* Ensures stable box model */
 }
 
 .pedal-image {
@@ -151,6 +176,25 @@ body {
 .add-favorite-button:hover,
 .show-favorites-button:hover {
   background: #666;
+}
+
+.uafx-controls-button {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 20px;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+
+}
+
+.uafx-controls-button:hover {
+  background: #777;
+  transition: background 0.3s;
 }
 
 /* LED styles */
@@ -380,12 +424,299 @@ body {
   font-style: italic;
 }
 
+/* Toggle Button Styles */
+.toggle-button {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.toggle-button label {
+  margin-right: 10px;
+  color: #ccc;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #00ccff;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+/* Slider Styles */
+.slider-control {
+  margin-bottom: 15px;
+}
+
+.slider-control label {
+  display: block;
+  color: #ccc;
+  margin-bottom: 5px;
+}
+
+.slider-bounds {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #333;
+  outline: none;
+  border-radius: 2px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #00ccff;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #00ccff;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
 /* Add to existing CSS */
 .knob-container.secondary {
   transform: scale(1.5);
   opacity: 0.6;
   z-index: 90;
 }
+
+/* Styles for UAFX Controls Interface Elements */
+.uafx-control-group {
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+}
+
+.uafx-control-group:last-child {
+    border-bottom: none;
+}
+
+.uafx-control-group h4 {
+  margin-bottom: 8px;
+  color: #aaa;
+  font-size: 1em;
+}
+
+.uafx-button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.uafx-button-group-vert {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* optional: adds space between buttons */
+  align-items: stretch; /* optional: makes all buttons equal width */
+}
+
+.uafx-button-group button,
+.uafx-button-group-vert button,
+.uafx-toggle-button {
+  flex: 1;
+  padding: 5px 10px;
+  background: #444;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.uafx-button-group button:hover,
+.uafx-button-group-vert button:hover,
+.uafx-toggle-button:hover {
+  background: #555;
+}
+
+.uafx-button-group button.active,
+.uafx-button-group-vert button.active,
+.uafx-toggle-button.active {
+  background: #00ccff; /* Cyan color for active state */
+  border-color: #4dd0e1;
+  color: #111;
+  font-weight: bold;
+}
+
+.uafx-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.uafx-slider-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.uafx-slider-container label {
+    width: 80px; /* Set to desired width */
+    margin-right: 10px;
+    text-align: left;
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.uafx-slider-container input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+    appearance: none; /* Override default look */
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    outline: none;
+}
+
+/* Style the thumb (the draggable part) */
+.uafx-slider-container input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.uafx-slider-container input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.uafx-toggle-container {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    margin-bottom: 10px;
+}
+
+/* 
+.uafx-toggle-container label {
+    font-size: 0.9em;
+    color: #ccc;
+}
+*/
+
+.uafx-toggle-container label:first-child {
+  width: 100px; /* Or match slider label width */
+  text-align: right;
+  margin-right: 10px;
+}
+
+
+.uafx-toggle-button {
+    min-width: 60px; /* Ensure ON/OFF buttons have minimum width */
+    text-align: center;
+}
+
+/* Generic range input styles */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #00adef 50%, #555 50%);
+  outline: none;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Update the background fill dynamically with JS */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Firefox-specific styles */
+input[type="range"]::-moz-range-track {
+  background: #555;
+  height: 8px;
+  border-radius: 4px;
+}
+
+input[type="range"]::-moz-range-progress {
+  background: #00adef;
+  height: 8px;
+  border-radius: 4px;
+}
+
+
 </style>
 </head>
 <body>
@@ -413,47 +744,55 @@ body {
   <!-- Cream '65 -->
   <div class="pedal">
     <h2>Cream &apos;65</h2>
-    <div class="pedal-image" id="cream" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="bass"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="treble"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="reverb"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="mid"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="mid-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2">
-      </div>
+    <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="cream" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="bass"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="treble"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="reverb"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="mid"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="mid-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface">
+            <p>UAFX Controls not yet implemented for this pedal.</p>
+        </div> 
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".cream" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -465,50 +804,58 @@ body {
   <!-- Rigby '63 -->
   <div class="pedal">
     <h2>Rigby &apos;63</h2>
-    <div class="pedal-image" id="rigby" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="tone"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="bias"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="drive"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="presence"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="drive-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="presence-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-rigby">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-rigby">
-      </div>
+     <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="rigby" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="tone"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="bias"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="drive"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="presence"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="drive-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="presence-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-rigby">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-rigby">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface">
+             <p>UAFX Controls not yet implemented for this pedal.</p>
+        </div> 
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".rigby" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -520,50 +867,106 @@ body {
   <!-- Leo '68 -->
   <div class="pedal">
     <h2>Leo &apos;68</h2>
-    <div class="pedal-image" id="leo" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="drive"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="tone"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="presence"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="bass"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="presence-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="bass-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-leo">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-leo">
-      </div>
+     <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="leo" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="drive"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="tone"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="presence"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="bass"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="presence-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="bass-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-leo">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-leo">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface leo-uafx-controls">
+            <div class="uafx-control-group">
+                <h4>Input Routing</h4>
+                <div class="uafx-button-group" data-control-type="input-routing">
+                    <button data-value="low" class="active">Low</button>
+                    <button data-value="high">High</button>
+                    <button data-value="jump">Jump</button>
+                </div>
+            </div>
+            
+            <div class="uafx-control-group">
+              <h4>Mods</h4>
+              <div class="uafx-toggle-container">
+                <label for="ghost-notes-toggle">Ghost Notes</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="ghost-notes-toggle" class="ghost-notes-toggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="uafx-toggle-container">
+                <label for="bright-cap-toggle">Bright Cap</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="bright-cap-toggle" class="bright-cap-toggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Noise Gate</h4>
+                <button class="uafx-toggle-button" data-control-type="noise-gate-enable" data-active="false" style="margin-bottom: 10px; width: 100%;">OFF</button>
+                <div class="uafx-slider-group noise-gate-sliders" style="display: none;"> <!-- Initially hidden -->
+                    <div class="uafx-slider-container">
+                        <label for="leo-ng-threshold">Threshold</label>
+                        <input type="range" id="leo-ng-threshold" min="0" max="100" value="50" data-control-type="ng-threshold">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="leo-ng-release">Release</label>
+                        <input type="range" id="leo-ng-release" min="0" max="100" value="50" data-control-type="ng-release">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="leo-ng-attenuation">Attenuation</label>
+                        <input type="range" id="leo-ng-attenuation" min="0" max="100" value="50" data-control-type="ng-attenuation">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="leo-ng-hold">Hold</label>
+                        <input type="range" id="leo-ng-hold" min="0" max="100" value="50" data-control-type="ng-hold">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".leo" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -575,40 +978,48 @@ body {
   <!-- Willow '55 -->
   <div class="pedal">
     <h2>Willow &apos;55</h2>
-    <div class="pedal-image" id="willow" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="tone"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="mic"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="bass"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="mid"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="treble"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-willow">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-willow">
-      </div>
+    <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="willow" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="tone"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="mic"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="bass"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="mid"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="treble"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-willow">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-willow">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface">
+             <p>UAFX Controls not yet implemented for this pedal.</p>
+        </div> 
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".willow" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -620,56 +1031,163 @@ body {
   <!-- Enigmax -->
   <div class="pedal">
     <h2>Enigmax</h2>
-    <div class="pedal-image" id="enigmax" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="range"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="filter"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="mix"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="sensitivity"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="output"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="range-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="mix-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="sensitivity-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="output-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-enigmax">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-enigmax">
-      </div>
+    <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="enigmax" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="range"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="filter"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="mix"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="sensitivity"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="output"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="range-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="mix-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="sensitivity-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="output-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-enigmax">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-enigmax">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface enigmax-uafx-controls">
+            <div class="uafx-control-group">
+                <h4>Amps</h4>
+                <div class="uafx-button-group-vert" data-control-type="amps">
+                    <button data-value="50w, high plate" class="active">50W, high plate</button>
+                    <button data-value="100w, low plate, squishy ps">100W, low plate, squishy PS</button>
+                    <button data-value="100w, high plate, stiff ps">100w, high plate, stiff PS</button>
+                    <button data-value="100w, low plate, very stiff ps">100w, low plate, very stiff PS</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+              <h4>Input</h4>
+              <div class="uafx-button-group" data-control-type="input">
+                <button data-value="normal" class="active">Normal</button>
+                <button data-value="fet">FET</button>
+              </div>
+              <div style="height: 10px;"></div> <!-- Empty line -->
+              <div class="uafx-slider-container fet-trim-slider" style="display: none;">
+                <label for="enigmax-ng-fet-trim">FET Trim</label>
+                <input type="range" id="enigmax-ng-fet-trim" min="0" max="100" value="50" data-control-type="ng-fet-trim">
+              </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Overdrive</h4>
+                <div class="uafx-button-group" data-control-type="overdrive">
+                    <button data-value="off" class="active">OFF</button>
+                    <button data-value="on">ON</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Bright Switch</h4>
+                <div class="uafx-button-group" data-control-type="bright-switch">
+                    <button data-value="bright-cap-off" class="active">Bright Cap Off</button>
+                    <button data-value="150-pf">150 pF</button>
+                    <button data-value="196-pf">196 pF</button>
+                    <button data-value="300-pf">300 pF</button>
+                </div>
+                <h4>Deep/Mid</h4>
+                <div class="uafx-button-group" data-control-type="deep-mid">
+                    <button data-value="off" class="active">Off</button>
+                    <button data-value="deep">Deep</button>
+                    <button data-value="mid">Mid</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Tone Stack EQ</h4>
+                <div class="uafx-button-group" data-control-type="tone-stack-eq">
+                    <button data-value="jazz" class="active">Jazz</button>
+                    <button data-value="rock">Rock</button>
+                </div>
+                <h4>Tone Stack Type</h4>
+                <div class="uafx-button-group" data-control-type="tone-stack-type">
+                    <button data-value="classic" class="active">Classic</button>
+                    <button data-value="skyline">Skyline</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Preamp Boost</h4>
+                <div class="uafx-button-group" data-control-type="preamp-boost">
+                    <button data-value="off" class="active">OFF</button>
+                    <button data-value="on">ON</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>OD Trim</h4>
+                <div class="uafx-slider-group noise-gate-sliders">
+                    <div class="uafx-slider-container">
+                        <input type="range" id="enigmax-ng-od-trim" min="0" max="100" value="50" data-control-type="ng-post-od-trim">
+                    </div>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>HRM Overdrive EQ</h4>
+                <button class="uafx-toggle-button" data-control-type="hrm-eq-enable" data-active="false" style="margin-bottom: 10px; width: 100%;">OFF</button>
+                <div class="uafx-slider-group hrm-eq-sliders" style="display: none;"> <!-- Initially hidden -->
+                    <div class="uafx-slider-container">
+                        <label for="enigmax-ng-treble">Treble</label>
+                        <input type="range" id="enigmax-ng-treble" min="0" max="100" value="50" data-control-type="ng-threshold">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="enigmax-ng-mid">Mid</label>
+                        <input type="range" id="enigmax-ng-mid" min="0" max="100" value="50" data-control-type="ng-attack">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="enigmax-ng-bass">Bass</label>
+                        <input type="range" id="enigmax-ng-bass" min="0" max="100" value="50" data-control-type="ng-release">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="herakles-ng-attenuation">Attenuation</label>
+                        <input type="range" id="herakles-ng-attenuation" min="0" max="100" value="50" data-control-type="ng-attenuation">
+                    </div>                     
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Master Gain</h4>
+                <div class="uafx-slider-group noise-gate-sliders">
+                    <div class="uafx-slider-container">
+                        <input type="range" id="aint-ng-master-gain" min="0" max="100" value="50" data-control-type="ng-post-master-gain">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".enigmax" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -681,56 +1199,158 @@ body {
   <!-- Herakles -->
   <div class="pedal">
     <h2>Herakles</h2>
-    <div class="pedal-image" id="herakles" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="gain"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="tone"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="bass"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="mid"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="treble"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="gain-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="bass-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="mid-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="treble-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-herakles">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-herakles">
-      </div>
+    <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="herakles" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="gain"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="tone"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="bass"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="mid"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="treble"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="gain-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="bass-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="mid-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="treble-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-herakles">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-herakles">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface herakles-uafx-controls">
+            <div class="uafx-control-group">
+                <h4>Overdrive</h4>
+                <div class="uafx-button-group" data-control-type="overdrive">
+                    <button data-value="ts" class="active">TS</button>
+                    <button data-value="tc">TC</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Noise Gate</h4>
+                <button class="uafx-toggle-button" data-control-type="noise-gate-enable" data-active="false" style="margin-bottom: 10px; width: 100%;">OFF</button>
+                <div class="uafx-slider-group noise-gate-sliders" style="display: none;"> <!-- Initially hidden -->
+                    <div class="uafx-slider-container">
+                        <label for="herakles-ng-threshold">Threshold</label>
+                        <input type="range" id="herakles-ng-threshold" min="0" max="100" value="50" data-control-type="ng-threshold">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="herakles-ng-atack">Attack</label>
+                        <input type="range" id="herakles-ng-attack" min="0" max="100" value="50" data-control-type="ng-attack">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="herakles-ng-release">Release</label>
+                        <input type="range" id="herakles-ng-release" min="0" max="100" value="50" data-control-type="ng-release">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="herakles-ng-attenuation">Attenuation</label>
+                        <input type="range" id="herakles-ng-attenuation" min="0" max="100" value="50" data-control-type="ng-attenuation">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="herakles-ng-hold">Hold</label>
+                        <input type="range" id="herakles-ng-hold" min="0" max="100" value="50" data-control-type="ng-hold">
+                    </div>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Signal Flow</h4>
+                <div class="uafx-button-group-vert" data-control-type="signal-flow">
+                    <button data-value="preamp + tone eq" class="active">Preamp + Tone EQ</button>
+                    <button data-value="tone eq + power amp">Tone EQ + Power Amp</button>
+                    <button data-value="full">Full</button>
+                </div>
+            </div>
+            
+            <div class="uafx-control-group">
+              <h4>Channel Style / Orange Presence</h4>
+              <div class="uafx-button-group" data-control-type="channel-select">
+                <button data-value="clean" class="active">Clean</button>
+                <button data-value="orange-channel">Orange Channel</button>
+                <button data-value="red-channel">Red Channel</button>
+              </div>
+              <div class="channel-style-options" style="display: none; margin-top: 10px;">
+                <h4>Channel Style</h4>
+                <div class="uafx-button-group" data-control-type="channel-style">
+                  <button data-value="normal">Normal</button>
+                  <button data-value="modern">Modern</button>
+                </div>
+              </div>
+              <div class="channel-style-options-red" style="display: none; margin-top: 10px;">
+                <h4>Red Channel Style</h4>
+                <div class="uafx-button-group" data-control-type="channel-style-red">
+                  <button data-value="normal">Normal</button>
+                  <button data-value="vintage">Vintage</button>
+                </div>
+                <div class="uafx-slider-container">
+                  <label for="herakles-orange-presence">Orange Presence</label>
+                  <input type="range" id="herakles-orange-presence" min="0" max="100" value="50" data-control-type="orange-presence">
+                </div>
+              </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Power Tubes</h4>
+                <div class="uafx-button-group" data-control-type="power-tubes">
+                    <button data-value="6l6" class="active">6L6</button>
+                    <button data-value="el34">EL34</button>
+                </div>
+                <div style="height: 10px;"></div> <!-- Empty line -->
+                <h4>Rectifier Type</h4>
+                <div class="uafx-button-group" data-control-type="rectifier type">
+                    <button data-value="solid state" class="active">Solid State</button>
+                    <button data-value="tube">Tube</button>
+                </div>
+                <div style="height: 10px;"></div> <!-- Empty line -->
+                <h4>Power Mode</h4>
+                <div class="uafx-button-group" data-control-type="power mode">
+                    <button data-value="bold" class="active">Bold</button>
+                    <button data-value="spongy">Spongy</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Master</h4>
+                <div class="uafx-slider-group noise-gate-sliders">
+                    <div class="uafx-slider-container">
+                        <input type="range" id="herakles-ng-master" min="0" max="100" value="50" data-control-type="ng-master">
+                    </div>
+                </div>
+            </div>            
+        </div> 
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".herakles" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -742,56 +1362,143 @@ body {
   <!-- Aint -->
   <div class="pedal">
     <h2>Aint</h2>
-    <div class="pedal-image" id="aint" style="background-image: none;">
-      <div class="knob-container" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="tone"></div>
-      </div>
-      <div class="knob-container" style="top: 13%; left: 73.33%">
-        <div class="knob" data-param="filter"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="mix"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="drive"></div>
-      </div>
-      <div class="knob-container" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master"></div>
-      </div>
-      <!-- Secondary Knobs -->
-      <div class="knob-container secondary" style="top: 13%; left: 11.67%">
-        <div class="knob" data-param="volume-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 13%; left: 41.67%">
-        <div class="knob" data-param="tone-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 11.67%">
-        <div class="knob" data-param="mix-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 41.67%">
-        <div class="knob" data-param="drive-secondary"></div>
-      </div>
-      <div class="knob-container secondary" style="top: 42%; left: 73.33%">
-        <div class="knob" data-param="master-secondary"></div>
-      </div>
-      <div class="led-container">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-aint">
-      </div>
-      <div class="led-container second-led-set">
-        <div class="led"></div>
-        <div class="led"></div>
-        <div class="led"></div>
-        <input type="radio" class="radio-button" name="led-control-2-aint">
-      </div>
+    <div class="pedal-interface">
+        <div class="main-pedal-controls"> 
+            <div class="pedal-image" id="aint" style="background-image: none;">
+                <div class="knob-container" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="tone"></div>
+                </div>
+                <div class="knob-container" style="top: 13%; left: 73.33%">
+                    <div class="knob" data-param="filter"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="mix"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="drive"></div>
+                </div>
+                <div class="knob-container" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master"></div>
+                </div>
+                <!-- Secondary Knobs -->
+                <div class="knob-container secondary" style="top: 13%; left: 11.67%">
+                    <div class="knob" data-param="volume-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 13%; left: 41.67%">
+                    <div class="knob" data-param="tone-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 11.67%">
+                    <div class="knob" data-param="mix-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 41.67%">
+                    <div class="knob" data-param="drive-secondary"></div>
+                </div>
+                <div class="knob-container secondary" style="top: 42%; left: 73.33%">
+                    <div class="knob" data-param="master-secondary"></div>
+                </div>
+                <div class="led-container">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-aint">
+                </div>
+                <div class="led-container second-led-set">
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <div class="led"></div>
+                    <input type="radio" class="radio-button" name="led-control-2-aint">
+                </div>
+            </div>
+        </div>
+        <div class="uafx-controls-interface aint-uafx-controls">
+            <div class="uafx-control-group">
+                <h4>Overdrive</h4>
+                <div class="uafx-button-group" data-control-type="overdrive">
+                    <button data-value="ts" class="active">TS</button>
+                    <button data-value="tc">TC</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Bright Switch</h4>
+                <div class="uafx-button-group" data-control-type="bright-switch">
+                    <button data-value="off" class="active">OFF</button>
+                    <button data-value="on">ON</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Noise Gate</h4>
+                <button class="uafx-toggle-button" data-control-type="noise-gate-enable" data-active="false" style="margin-bottom: 10px; width: 100%;">OFF</button>
+                <div class="uafx-slider-group noise-gate-sliders" style="display: none;"> <!-- Initially hidden -->
+                    <div class="uafx-slider-container">
+                        <label for="aint-ng-threshold">Threshold</label>
+                        <input type="range" id="aint-ng-threshold" min="0" max="100" value="50" data-control-type="ng-threshold">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="aint-ng-atack">Attack</label>
+                        <input type="range" id="aint-ng-attack" min="0" max="100" value="50" data-control-type="ng-attack">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="aint-ng-release">Release</label>
+                        <input type="range" id="aint-ng-release" min="0" max="100" value="50" data-control-type="ng-release">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="aint-ng-attenuation">Attenuation</label>
+                        <input type="range" id="aint-ng-attenuation" min="0" max="100" value="50" data-control-type="ng-attenuation">
+                    </div>
+                     <div class="uafx-slider-container">
+                        <label for="aint-ng-hold">Hold</label>
+                        <input type="range" id="aint-ng-hold" min="0" max="100" value="50" data-control-type="ng-hold">
+                    </div>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Input Routing</h4>
+                <div class="uafx-button-group" data-control-type="input-routing">
+                    <button data-value="high" class="active">High</button>
+                    <button data-value="low">Low</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Rhythm Mode</h4>
+                <div class="uafx-button-group" data-control-type="rhythm-mode">
+                    <button data-value="clean" class="active">Clean</button>
+                    <button data-value="punch">Punch</button>
+                    <button data-value="punch+">Punch+</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Bias Mode</h4>
+                <div class="uafx-button-group-vert" data-control-type="bias-mode">
+                    <button data-value="cool" class="active">Cool</button>
+                    <button data-value="warm">Warm</button>
+                    <button data-value="cool choke">Cool Choke</button>
+                    <button data-value="warm choke">Warm Choke</button>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Post Gain</h4>
+                <div class="uafx-slider-group noise-gate-sliders">
+                    <div class="uafx-slider-container">
+                        <input type="range" id="aint-ng-post-gain" min="0" max="100" value="50" data-control-type="ng-post-gain">
+                    </div>
+                </div>
+            </div>
+            <div class="uafx-control-group">
+                <h4>Room</h4>
+                <div class="uafx-slider-group noise-gate-sliders">
+                    <div class="uafx-slider-container">
+                        <input type="range" id="aint-ng-room" min="0" max="100" value="50" data-control-type="ng-room">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="preset-name">Default</div>
     <div class="button-group">
+      <button class="uafx-controls-button">uafx controls</button> 
       <button class="save-button">Save Current Settings</button>
       <input type="file" class="import-input" accept=".aint" style="display: none;">
       <button class="import-button">Import Saved Settings</button>
@@ -931,6 +1638,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dragging = true;
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
+        const rect = knobContainer.getBoundingClientRect();
         originalX = rect.left;
         originalY = rect.top;
       }
@@ -1070,28 +1778,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const settings = saveSettings(pedal);
 
-        canvas.toBlob(async function (imageBlob) {
-          const zip = new JSZip();
-          zip.file('settings.json', JSON.stringify(settings));
-          zip.file('preview.png', imageBlob);
-          const zipContent = await zip.generateAsync({
-            type: 'blob',
-            mimeType: `application/x-${pedalExtension}`
-          });
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          const fileName = `UAudio-${settings.pedalName}-${timestamp}.${pedalExtension}`.replace(/\s+/g, '-');
-          const link = document.createElement('a');
-          link.download = fileName;
-          if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            const blob = new Blob([zipContent], {
-              type: `application/x-${pedalExtension}`
-            });
-            link.href = URL.createObjectURL(blob);
-          } else {
+        canvas.toBlob(async function (mainImageBlob) {
+          try {
+            const zip = new JSZip();
+            zip.file('settings.json', JSON.stringify(settings));
+            zip.file('preview.png', mainImageBlob);
+
+            // === Capture UAFX controls preview ===
+            const mainControls = pedal.querySelector('.main-pedal-controls');
+            const uafxControls = pedal.querySelector('.uafx-controls-interface');
+
+            // Temporarily switch to UAFX controls
+            mainControls.style.display = 'none';
+            uafxControls.style.display = 'block';
+
+            // Give layout time to settle (just in case)
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            /* const uafxImageBlob = await domtoimage.toBlob(uafxControls); */
+
+            // Save current styles
+            const originalHeight = uafxControls.style.height;
+            const originalMaxHeight = uafxControls.style.maxHeight;
+            const originalOverflow = uafxControls.style.overflow;
+
+            // Force full expansion for capture
+            uafxControls.style.height = 'auto';
+            uafxControls.style.maxHeight = 'none';
+            uafxControls.style.overflow = 'visible';
+
+            const uafxImageBlob = await domtoimage.toBlob(uafxControls);
+
+            // Restore original styles
+            uafxControls.style.height = originalHeight;
+            uafxControls.style.maxHeight = originalMaxHeight;
+            uafxControls.style.overflow = originalOverflow;
+
+
+            // Add UAFX preview to zip
+            zip.file('previewUafxControls.png', uafxImageBlob);
+
+            // Restore original view
+            mainControls.style.display = 'block';
+            uafxControls.style.display = 'none';
+
+            const zipContent = await zip.generateAsync({ type: 'blob' });
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const fileName = `UAudio-${settings.pedalName}-${timestamp}.${pedalExtension}`.replace(/\s+/g, '-');
+
+            const link = document.createElement('a');
+            link.download = fileName;
             link.href = URL.createObjectURL(zipContent);
+            link.click();
+            URL.revokeObjectURL(link.href);
+          } catch (error) {
+            console.error('Error saving UAFX preview:', error);
+            alert('Sorry, there was an error saving the settings. Please try again.');
           }
-          link.click();
-          URL.revokeObjectURL(link.href);
         }, 'image/png', 1.0);
       } catch (error) {
         console.error('Error generating save file:', error);
@@ -1174,6 +1917,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  document.querySelectorAll('[data-control-type="input"] button').forEach(button => {
+    button.addEventListener('click', () => {
+      const slider = button.closest('.uafx-control-group').querySelector('.fet-trim-slider');
+
+      // Remove active class from both buttons
+      button.parentElement.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+
+      // Set clicked button as active
+      button.classList.add('active');
+
+      // Show or hide slider depending on button value
+      if (button.getAttribute('data-value') === 'fet') {
+        slider.style.display = 'block';
+      } else {
+        slider.style.display = 'none';
+      }
+    });
+  });
+
+
   document.querySelectorAll('.show-favorites-button').forEach(button => {
     button.addEventListener('click', () => {
       const pedal = button.closest('.pedal');
@@ -1251,7 +2014,8 @@ document.addEventListener('DOMContentLoaded', () => {
           mimeType: `application/x-${extension}`
         });
         const link = document.createElement('a');
-        const fileName = `UAudio-${favorite.customName || `${favorite.name}-${favorite.timestamp}`}.${extension}`.replace(/[^a-z0-9-]/gi, '_').replace(/_cream$/i, '.cream').replace(/_rigby$/i, '.rigby').replace(/_leo$/i, '.leo').replace(/_willow$/i, '.willow').replace(/_enigmax$/i, '.enigmax').replace(/_herakles$/i, '.herakles').replace(/_aint$/i, '.aint');
+        const safeCustomName = (favorite.customName || `${favorite.name}-${favorite.timestamp}`).replace(/[^a-z0-9-]/gi, '_');
+        const fileName = `UAudio-${safeCustomName}.${extension}`;
         link.download = fileName;
         link.href = URL.createObjectURL(zipContent);
         link.click();
@@ -1266,6 +2030,43 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function saveSettings(pedal) {
+    const uafxControls = {};
+    const uafxInterface = pedal.querySelector('.uafx-controls-interface');
+
+    // Save UAFX button group states (e.g., Input Routing)
+    uafxInterface.querySelectorAll('.uafx-button-group, .uafx-button-group-vert').forEach(group => {
+        const controlType = group.dataset.controlType;
+        const activeButton = group.querySelector('button.active');
+        if (controlType && activeButton) {
+            uafxControls[controlType] = activeButton.dataset.value;
+        }
+    });
+
+    // Save checkbox states (e.g., Ghost Notes, Bright Cap)
+    uafxInterface.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        if (checkbox.classList.contains('ghost-notes-toggle')) {
+            uafxControls['ghost-notes'] = checkbox.checked;
+        } else if (checkbox.classList.contains('bright-cap-toggle')) {
+            uafxControls['bright-cap'] = checkbox.checked;
+        }
+    });
+
+    // Save UAFX toggle button states (e.g., Mods, Noise Gate Enable)
+    uafxInterface.querySelectorAll('.uafx-toggle-button').forEach(button => {
+        const controlType = button.dataset.controlType;
+        if (controlType) {
+            uafxControls[controlType] = button.classList.contains('active');
+        }
+    });
+
+    // Save UAFX slider values (e.g., Noise Gate params)
+    uafxInterface.querySelectorAll('input[type="range"]').forEach(slider => {
+        const controlType = slider.dataset.controlType;
+        if (controlType) {
+            uafxControls[controlType] = slider.value;
+        }
+    });
+
     return {
       pedalName: pedal.querySelector('h2').textContent.trim(),
       knobPositions: Array.from(pedal.querySelectorAll('.knob')).map(knob => ({
@@ -1287,44 +2088,282 @@ document.addEventListener('DOMContentLoaded', () => {
             boxShadow: led.style.boxShadow
           }
         }))
-      }
+      },
+      uafxControls: uafxControls // Add UAFX controls state
     };
   }
 
   function restoreSettings(pedal, settings) {
     // Restore knob positions first
-    settings.knobPositions.forEach(knobSetting => {
-      const knob = pedal.querySelector(`[data-param="${knobSetting.param}"]`);
-      if (knob) {
-        knob.dataset.rotation = knobSetting.rotation;
-        knob.style.transform = `rotate(${knobSetting.rotation}deg)`;
-        const knobContainer = knob.closest('.knob-container');
-        knobContainer.style.top = knobSetting.top;
-        knobContainer.style.left = knobSetting.left;
-      }
-    });
+    if (settings.knobPositions) {
+      settings.knobPositions.forEach(knobSetting => {
+        const knob = pedal.querySelector(`[data-param="${knobSetting.param}"]`);
+        if (knob) {
+          knob.dataset.rotation = knobSetting.rotation;
+          knob.style.transform = `rotate(${knobSetting.rotation}deg)`;
+          const knobContainer = knob.closest('.knob-container');
+          knobContainer.style.top = knobSetting.top;
+          knobContainer.style.left = knobSetting.left;
+        }
+      });
+    }
 
-    // Restore first LED set
-    const firstSetLeds = pedal.querySelectorAll('.led-container:not(.second-led-set) .led');
-    settings.ledStates.firstSet.forEach((ledState, idx) => {
-      if (firstSetLeds[idx]) {
-        firstSetLeds[idx].className = ledState.className;
-        firstSetLeds[idx].closest('.led-container').dataset.currentState = ledState.currentState;
+    // Restore LED states
+    if (settings.ledStates) {
+      // Restore first LED set
+      const firstSetLeds = pedal.querySelectorAll('.led-container:not(.second-led-set) .led');
+      if (settings.ledStates.firstSet) {
+          settings.ledStates.firstSet.forEach((ledState, idx) => {
+              if (firstSetLeds[idx]) {
+                  firstSetLeds[idx].className = ledState.className;
+                  const container = firstSetLeds[idx].closest('.led-container');
+                  if (container) container.dataset.currentState = ledState.currentState;
+              }
+          });
       }
-    });
 
-    // Restore second LED set
-    const secondSetLeds = pedal.querySelectorAll('.led-container.second-led-set .led');
-    settings.ledStates.secondSet.forEach((ledState, idx) => {
-      if (secondSetLeds[idx]) {
-        secondSetLeds[idx].className = ledState.className;
-        secondSetLeds[idx].style.background = ledState.style.background;
-        secondSetLeds[idx].style.boxShadow = ledState.style.boxShadow;
-        secondSetLeds[idx].closest('.led-container').dataset.currentState = ledState.currentState;
+      // Restore second LED set
+      const secondSetLeds = pedal.querySelectorAll('.led-container.second-led-set .led');
+      if (settings.ledStates.secondSet) {
+          settings.ledStates.secondSet.forEach((ledState, idx) => {
+              if (secondSetLeds[idx]) {
+                  secondSetLeds[idx].className = ledState.className;
+                  secondSetLeds[idx].style.background = ledState.style.background || '';
+                  secondSetLeds[idx].style.boxShadow = ledState.style.boxShadow || '';
+                  const container = secondSetLeds[idx].closest('.led-container');
+                  if (container) container.dataset.currentState = ledState.currentState;
+              }
+          });
       }
-    });
+    }
+
+    // Restore UAFX Controls
+    if (settings.uafxControls) {
+      const uafxInterface = pedal.querySelector('.uafx-controls-interface');
+      Object.entries(settings.uafxControls).forEach(([controlType, value]) => {
+        // Restore button groups
+        const buttonGroup = uafxInterface.querySelector(`.uafx-button-group[data-control-type="${controlType}"]`);
+        if (buttonGroup) {
+          buttonGroup.querySelectorAll('button').forEach(button => {
+            button.classList.toggle('active', button.dataset.value === value);
+          });
+        }
+
+        // Restore toggle buttons
+        const toggleButton = uafxInterface.querySelector(`.uafx-toggle-button[data-control-type="${controlType}"]`);
+        if (toggleButton) {
+          toggleButton.classList.toggle('active', value);
+          toggleButton.textContent = value ? 'ON' : 'OFF';
+           // Special handling for noise gate visibility
+           if (controlType === 'noise-gate-enable') {
+                const sliderGroup = pedal.querySelector('.noise-gate-sliders');
+                if (sliderGroup) {
+                    sliderGroup.style.display = value ? 'flex' : 'none';
+                }
+            }
+            if (controlType === 'hrm-eq-enable') {
+                 const sliderGroup = pedal.querySelector('.hrm-eq-sliders');
+                 if (sliderGroup) {
+                     sliderGroup.style.display = value ? 'flex' : 'none';
+                 }
+             }
+        }
+
+        // Restore checkbox states (e.g., Ghost Notes, Bright Cap)
+        const ghostCheckbox = uafxInterface.querySelector('.ghost-notes-toggle');
+        if (ghostCheckbox && 'ghost-notes' in settings.uafxControls) {
+          ghostCheckbox.checked = settings.uafxControls['ghost-notes'];
+        }
+
+        const brightCapCheckbox = uafxInterface.querySelector('.bright-cap-toggle');
+        if (brightCapCheckbox && 'bright-cap' in settings.uafxControls) {
+          brightCapCheckbox.checked = settings.uafxControls['bright-cap'];
+        }
+
+        // Restore sliders
+        const slider = uafxInterface.querySelector(`input[type="range"][data-control-type="${controlType}"]`);
+        if (slider) {
+          slider.value = value;
+        }
+      });
+    }
   }
+
+   // Function to initialize UAFX controls for a specific pedal
+   function initializeUafxControls(pedalElement) {
+    const uafxInterface = pedalElement.querySelector('.uafx-controls-interface');
+    if (!uafxInterface) return; // No UAFX controls for this pedal
+
+    // --- Button Group Handling (e.g., Input Routing) ---
+    uafxInterface.querySelectorAll('.uafx-button-group, .uafx-button-group-vert').forEach(group => {
+        group.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                // Deactivate all buttons in the group
+                group.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                // Activate the clicked button
+                e.target.classList.add('active');
+            }
+        });
+    });
+
+    // --- Toggle Button Handling (e.g., Mods, Noise Gate Enable) ---
+    uafxInterface.querySelectorAll('.uafx-toggle-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const isActive = button.classList.toggle('active');
+            button.textContent = isActive ? 'ON' : 'OFF';
+
+            // Special handling for Noise Gate enable/disable
+            if (button.dataset.controlType === 'noise-gate-enable') {
+                const sliderGroup = pedalElement.querySelector('.noise-gate-sliders');
+                if (sliderGroup) {
+                    sliderGroup.style.display = isActive ? 'flex' : 'none';
+                }
+            }
+            if (button.dataset.controlType === 'hrm-eq-enable') {
+                const sliderGroup = pedalElement.querySelector('.hrm-eq-sliders');
+                if (sliderGroup) {
+                    sliderGroup.style.display = isActive ? 'flex' : 'none';
+                }
+            }
+        });
+         // Initialize text content based on initial state (if not already set by restoreSettings)
+        if (!button.textContent) {
+             button.textContent = button.classList.contains('active') ? 'ON' : 'OFF';
+        }
+    });
+
+    // --- Slider Handling (already functional, just ensure they exist) ---
+    uafxInterface.querySelectorAll('input[type="range"]').forEach(slider => {
+        // Add any specific slider logic here if needed in the future
+    });
+   }
+
+  // Initialize UAFX controls for all pedals on page load
+  document.querySelectorAll('.pedal').forEach(initializeUafxControls);
+
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Add event listeners for UAFX controls buttons
+  document.querySelectorAll('.uafx-controls-button').forEach(button => {
+    button.addEventListener('click', function() {
+      const pedal = button.closest('.pedal');
+      const mainControls = pedal.querySelector('.main-pedal-controls');
+      const uafxControls = pedal.querySelector('.uafx-controls-interface');
+
+      const saveBtn = pedal.querySelector('.save-button');
+      const importBtn = pedal.querySelector('.import-button');
+      const addFavBtn = pedal.querySelector('.add-favorite-button');
+      const showFavBtn = pedal.querySelector('.show-favorites-button');
+
+      const toggleButtons = [saveBtn, importBtn, addFavBtn, showFavBtn];
+
+      if (mainControls.style.display !== 'none') {
+        // Show UAFX controls
+        mainControls.style.display = 'none';
+        uafxControls.style.display = 'block';
+        button.textContent = 'go back to pedal controls';
+
+        // Hide and disable buttons
+        toggleButtons.forEach(btn => {
+          btn.style.display = 'none';
+          btn.disabled = true;
+        });
+
+      } else {
+        // Show pedal controls
+        mainControls.style.display = 'block';
+        uafxControls.style.display = 'none';
+        button.textContent = 'uafx controls';
+
+        // Show and enable buttons
+        toggleButtons.forEach(btn => {
+          btn.style.display = 'block';
+          btn.disabled = false;
+        });
+      }
+    });
+  });  
+});
+
+function updateSliderBackground(slider) {
+      const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+      slider.style.background = `linear-gradient(to right, #00ccff ${value}%, #555 ${value}%)`;
+    }
+
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+      updateSliderBackground(slider); // Initial fill
+      slider.addEventListener('input', () => updateSliderBackground(slider));
+    });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const channelButtons = document.querySelectorAll('[data-control-type="channel-select"] button');
+  const channelStyleButtonsOrange = document.querySelectorAll('[data-control-type="channel-style"] button');
+  const channelStyleButtonsRed = document.querySelectorAll('[data-control-type="channel-style-red"] button');
+  const channelStyleOptionsOrange = document.querySelector('.channel-style-options');
+  const channelStyleOptionsRed = document.querySelector('.channel-style-options-red');
+
+  // Handle top-level channel selection
+  channelButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.dataset.value;
+
+      // Remove active from all
+      channelButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      // Toggle orange/red sub-options
+      if (value === 'orange-channel') {
+        channelStyleOptionsOrange.style.display = 'block';
+        channelStyleOptionsRed.style.display = 'none';
+      } else if (value === 'red-channel') {
+        channelStyleOptionsOrange.style.display = 'none';
+        channelStyleOptionsRed.style.display = 'block';
+      } else {
+        channelStyleOptionsOrange.style.display = 'none';
+        channelStyleOptionsRed.style.display = 'none';
+
+        // Clear both sub-option selections
+        channelStyleButtonsOrange.forEach(b => b.classList.remove('active'));
+        channelStyleButtonsRed.forEach(b => b.classList.remove('active'));
+      }
+    });
+  });
+
+  // Orange sub-options
+  channelStyleButtonsOrange.forEach(button => {
+    button.addEventListener('click', () => {
+      channelStyleButtonsOrange.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+
+      // Keep orange-channel active
+      channelButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === 'orange-channel');
+      });
+
+      channelStyleOptionsOrange.style.display = 'block';
+      channelStyleOptionsRed.style.display = 'none';
+    });
+  });
+
+  // Red sub-options
+  channelStyleButtonsRed.forEach(button => {
+    button.addEventListener('click', () => {
+      channelStyleButtonsRed.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+
+      // Keep red-channel active
+      channelButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === 'red-channel');
+      });
+
+      channelStyleOptionsRed.style.display = 'block';
+      channelStyleOptionsOrange.style.display = 'none';
+    });
+  });
+});
+
+
 </script>
 </body>
 </html>
